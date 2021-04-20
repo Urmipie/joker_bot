@@ -1,5 +1,4 @@
-def a():
-    print('12')
-
-q = {'1': a}
-q['1']()
+try:
+    raise Exception('ssss')
+except Exception as error:
+    print(error)
