@@ -8,5 +8,5 @@ class User(SqlAlchemyBase, SerializerMixin):
 
     id = sqlalchemy.Column(sqlalchemy.Integer,
                            primary_key=True, autoincrement=True)
-    vk_id = sqlalchemy.Column(sqlalchemy.Integer)
+    vk_id = sqlalchemy.Column(sqlalchemy.Integer, unique=True)
 

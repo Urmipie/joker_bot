@@ -1,4 +1,4 @@
-try:
-    raise Exception('ssss')
-except Exception as error:
-    print(error)
+a = {}
+
+print(a.setdefault('1'))
+print(list(a.items()))

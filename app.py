@@ -4,7 +4,9 @@ from flask import Flask
 from flask import request
 from flask_vk_callback import VkCallbackAPI
 from vk_bot.vk_bot import VkBot
-import data
+from data import db_session
+
+db_session.global_init('db/.db')
 
 app = Flask(__name__)
 vk_callback = VkCallbackAPI(app, '/vk_api')
@@ -36,5 +38,9 @@ def unexpected_event():
     print(f'unexpected event: {request.json["type"]}\n{request.json}')
 
 
-if __name__ == '__main__':
+def main():
     app.run()
+
+
+if __name__ == '__main__':
+    main()

@@ -9,4 +9,4 @@ class Joke(SqlAlchemyBase, SerializerMixin):
     __tablename__ = 'jokes'
 
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
-    text = sqlalchemy.Column(sqlalchemy.String)
+    text = sqlalchemy.Column(sqlalchemy.String, unique=True)
