@@ -29,8 +29,14 @@ class Parser(HTMLParser, ABC):
 
 
 def get_joke_by_phrase(phrase) -> list:
+    print('Phrase:', phrase)
     resp = requests.post('https://nekdo.ru/search', data={'query': phrase}).content.decode()
     parser = Parser()
     parser.feed(resp)
+    print('jokes:', parser.data)
     return choice(parser.data)
+
+
+if __name__ == '__main__':
+    print(get_joke_by_phrase(input()))
 

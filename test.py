@@ -1,4 +1,4 @@
-a = {}
+import keyring
 
-print(a.setdefault('1'))
-print(list(a.items()))
+a = keyring.get_password('system', 'username')
+print(a)
