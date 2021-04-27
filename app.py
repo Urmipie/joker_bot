@@ -1,4 +1,4 @@
-from credential import GROUP_ID, VK_TOKEN, VK_CALLBACK_CONFIRMATION_CODE, VK_CALLBACK_SECRET_CODE, SERVER_URL
+from credential import VK_GROUP_ID, VK_TOKEN, VK_CALLBACK_CONFIRMATION_CODE, VK_CALLBACK_SECRET_CODE, SERVER_URL
 import flask
 from flask import Flask
 from flask import request
@@ -15,25 +15,26 @@ app = Flask(__name__)
 vk_callback = VkCallbackAPI(app, '/vk_api')
 vk_callback.set_confirmation_code(VK_CALLBACK_CONFIRMATION_CODE)
 vk_callback.secret_key = VK_CALLBACK_SECRET_CODE
-callback_init(group_id=GROUP_ID, server_id=2, url=SERVER_URL,
-              secret_key=VK_CALLBACK_SECRET_CODE, vk_sess=VK)
+callback_init(group_id=VK_GROUP_ID, server_id=2, url=SERVER_URL,
+              secret_key=VK_CALLBACK_SECRET_CODE, vk=VK)
 vk_bot = VkBot()
 
 
 @vk_callback.event('message_allow')
 def new_user():
     print(request.json)
-    vk_bot.new_user(request.json['object']['user_id'])
+    vk_bot.new_user(vk_id=request.json['object']['user_id'])
 
 
 @vk_callback.event('message_deny')
 def del_user():
     print(request.json)
-    vk_bot.del_user(request.json['object']['user_id'])
+    vk_bot.del_user(vk_id=request.json['object']['user_id'])
 
 
 @vk_callback.event('message_new')
 def new_message():
+    # event_type = flask.request.json.get('type', False)
     print(request.json)
     vk_bot.new_message(request.json)
 

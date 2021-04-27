@@ -1,9 +1,11 @@
+import asyncio
 from .vk_sender import VkSender
 from actions import Action
 from .vk_messages import VkMessage
 from datetime import timedelta
-from credential import GROUP_ID
 from vk_api_init import VK
+from credential import VK_GROUP_ID as GROUP_ID
+
 
 class VkCommands(Action):
     def ok_keyboard(self, vk_id, keyboard_view, message=''):
@@ -205,9 +207,8 @@ class VkCommands(Action):
         ans = self.unsubscribe(subscribe_id=sub_id)
         return self.ok_keyboard(vk_id=vk_id, keyboard_view=client_info['keyboard'], message=ans)
 
-    def help(self, ):
+    def help(self,):
         pass
-
 
 
 class VkBot:
@@ -224,19 +225,11 @@ class VkBot:
         a = {}
         if action:
             action_type = action['type']
-            if action_type in ('chat_invite_user', 'message_allow'):
-                if action_type == 'chat_invite_user' and not action['member_id'] == GROUP_ID:
-                    print('ignore')
-                    return
-
+            if action_type == 'chat_invite_user' and action['member_id'] == GROUP_ID:
                 a = self.commands.start_message(message=message, client_info=obj['client_info'])
                 self.commands.new_user(vk_id=message['peer_id'])
 
-            elif action_type in ('message_deny', 'chat_kick_user'):
-                if action_type == 'chat_kick_user' and not action['member_id'] == GROUP_ID:
-                    print('ignore')
-                    return
-
+            elif action_type == 'chat_kick_user' and action['member_id'] == GROUP_ID:
                 self.commands.del_user(vk_id=message['peer_id'])
         else:
             a = self.commands.new_message(obj=obj)
@@ -246,3 +239,9 @@ class VkBot:
             print('vk: send:', out_message)
             print('con: ', self.commands.context)
             self.sender.send_message(**out_message)
+
+    def new_user(self, vk_id):
+        self.commands.new_user(vk_id=vk_id)
+
+    def del_user(self, vk_id):
+        self.commands.del_user(vk_id=vk_id)

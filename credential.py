@@ -1,12 +1,12 @@
 import keyring
-from vk_api_init import VkApi
+from vk_api import VkApi
 from string import ascii_letters, digits
 from random import choice
 
 
 # Следующие 2 поля нужно заполнить перед запуском
-SERVER_URL = 'http://3bd05bac4b03.ngrok.io'.strip() + '/vk_api'
-GROUP_ID = 191176862
+SERVER_URL = 'https://e8894f41416e.ngrok.io'.strip() + '/vk_api'
+VK_GROUP_ID = 191176862
 VK_TOKEN = keyring.get_password('system', 'vk_token')
 
 if not VK_TOKEN:
@@ -16,7 +16,7 @@ vk_sess = VkApi(token=VK_TOKEN)
 vk = vk_sess.get_api()
 
 
-VK_CALLBACK_CONFIRMATION_CODE = vk.groups.getCallbackConfirmationCode(group_id=GROUP_ID)['code']
+VK_CALLBACK_CONFIRMATION_CODE = vk.groups.getCallbackConfirmationCode(group_id=VK_GROUP_ID)['code']
 VK_CALLBACK_SECRET_CODE = ''.join(choice(ascii_letters + digits) for _ in range(49))
 
 del vk

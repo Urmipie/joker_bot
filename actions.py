@@ -19,6 +19,7 @@ class Action:
         :return:
         """
         sess = create_session()
+        print('new_user:\t', vk_id)
         try:
             sess.add(User(vk_id=vk_id))
         except SQLIntegrityError:
@@ -32,13 +33,14 @@ class Action:
         :param kwargs: сборщик прочих аргументов
         :return:
         """
+        print('del user:\t', vk_id)
         assert vk_id
         sess = create_session()
         user = sess.query(User).filter(User.vk_id == vk_id).first()
         if user:
-            for subscribe in sess.query(Subscribe).filter(Subscribe.subscriber == user.id):
+            for subscribe in sess.query(Subscribe).filter(Subscribe.subscriber == vk_id).all():
                 sess.delete(subscribe)
-            for like in sess.query(Like).filter(Like.user_id == user.id):
+            for like in sess.query(Like).filter(Like.user_id == user.id).all():
                 sess.delete(like)
             sess.delete(user)
             sess.commit()
@@ -67,7 +69,7 @@ class Action:
 
     def get_subscribes(self, vk_id=None, **kwargs):
         sess = create_session()
-        subscriber_id = sess.query(User).filter(User.vk_id == vk_id).first().id
+        subscriber_id = sess.query(User).filter(User.vk_id == vk_id).first().vk_id
         return sess.query(Subscribe).filter(Subscribe.subscriber == subscriber_id).all()
 
     def get_formatted_subscribes(self, **kwargs):
