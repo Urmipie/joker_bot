@@ -6,7 +6,7 @@ class Joker:
     def __init__(self):
         self._get_random_jokes()
 
-    def random_joke(self):
+    def _random_joke(self):
         if not self.random_jokes:
             self._get_random_jokes()
         joke = self.random_jokes.pop()
@@ -15,6 +15,8 @@ class Joker:
     def _get_random_jokes(self):
         self.random_jokes = random_joke.random_joke()
 
-    @staticmethod
-    def get_joke_by_phrase(phrase):
-        return f'{joke_by_phrase.get_joke_by_phrase(phrase)}'
+    def get_joke(self, phrase=''):
+        if phrase:
+            return f'{joke_by_phrase.get_joke_by_phrase(phrase)}\n\nАнекдот с nekdo.ru'
+        else:
+            return self._random_joke()

@@ -2,7 +2,7 @@ import asyncio
 from datetime import datetime
 from data.db_session import create_session
 from data.subscribes import Subscribe
-from data.users import
+from data.users import User
 
 
 async def subscribe_send():

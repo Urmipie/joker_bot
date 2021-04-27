@@ -15,7 +15,7 @@ class Action:
     @staticmethod
     def new_user(vk_id=None, **kwargs):
         """
-        :param kwargs: vk_id - айдишник вк
+        :param vk_id: айдишник вк
         :return:
         """
         sess = create_session()
@@ -47,22 +47,48 @@ class Action:
             return 'Вашего профиля уже не существует'
 
     def random_joke(self, **kwargs):
-        return self.joker.random_joke()
+        return self.joker.get_joke()
 
     def joke_by_phrase(self, phrase, **kwargs):
-        return self.joker.get_joke_by_phrase(phrase)
+        return self.joker.get_joke(phrase)
 
     def subscribe(self, vk_id=None, phrase=None,
                   frequency=timedelta(hours=1), **kwargs):
+        assert bool(vk_id), 'не передан айди'
+        if len(self.get_subscribes(vk_id)) > 10:
+            return 'У вас уже много подписок'
         sub = Subscribe(subscriber=vk_id,
                         phrase=phrase,
                         frequency=frequency)
         sess = create_session()
         sess.add(sub)
         sess.commit()
+        return 'Добавлено'
 
-    def unsubscribe(self, **kwargs):
-        pass
+    def get_subscribes(self, vk_id=None, **kwargs):
+        sess = create_session()
+        subscriber_id = sess.query(User).filter(User.vk_id == vk_id).first().id
+        return sess.query(Subscribe).filter(Subscribe.subscriber == subscriber_id).all()
+
+    def get_formatted_subscribes(self, **kwargs):
+        """
+        возвращает список пар id шутки, текст для списка
+        :param kwargs:
+        :return:
+        """
+        subs_list = self.get_subscribes(**kwargs)
+        for i, subscribe in enumerate(subs_list):
+            subs_list[i] = (subscribe.id, f'{i}) '
+                                          f'{f"Тема {subscribe.phrase}" if subscribe.phrase else "Случайная"}, '
+                                          f'каждые {subscribe.frequency.seconds // 60} минут')
+        return subs_list
+
+    def unsubscribe(self, subscribe_id, **kwargs):
+        sess = create_session()
+        sub = sess.query(Subscribe).filter(Subscribe.id == subscribe_id).first()
+        sess.delete(sub)
+        sess.commit()
+        return 'Вы отписались'
 
     def do_command(self, *args, **kwargs):
         """

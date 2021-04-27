@@ -1,14 +1,11 @@
-import vk_api
-from secret import VK_TOKEN
+from vk_api_init import VK
+from credential import VK_TOKEN
 from random import randint
 
 
 class VkSender:
-    def __init__(self):
-        self.vk_sess = vk_api.VkApi(token=VK_TOKEN)
-        self.vk = self.vk_sess.get_api()
-
-    def send_message(self, **kwargs):
+    @staticmethod
+    def send_message(**kwargs):
         message = dict(random_id=randint(0, 2 ** 30), **kwargs)
-        print(message)
-        self.vk.messages.send(**message)
+        message.setdefault('keyboard', None)
+        VK.messages.send(**message)

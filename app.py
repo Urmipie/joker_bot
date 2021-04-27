@@ -1,17 +1,22 @@
-import secret
+from credential import GROUP_ID, VK_TOKEN, VK_CALLBACK_CONFIRMATION_CODE, VK_CALLBACK_SECRET_CODE, SERVER_URL
 import flask
 from flask import Flask
 from flask import request
 from flask_vk_callback import VkCallbackAPI
 from vk_bot.vk_bot import VkBot
 from data import db_session
+from callback_init import callback_init
+from vk_api_init import VK
+
 
 db_session.global_init('db/.db')
 
 app = Flask(__name__)
 vk_callback = VkCallbackAPI(app, '/vk_api')
-vk_callback.set_confirmation_code(secret.VK_CALLBACK_CONFIRMATION_CODE)
-vk_callback.secret_key = secret.VK_CALLBACK_SECRET_CODE
+vk_callback.set_confirmation_code(VK_CALLBACK_CONFIRMATION_CODE)
+vk_callback.secret_key = VK_CALLBACK_SECRET_CODE
+callback_init(group_id=GROUP_ID, server_id=2, url=SERVER_URL,
+              secret_key=VK_CALLBACK_SECRET_CODE, vk_sess=VK)
 vk_bot = VkBot()
 
 
