@@ -5,6 +5,8 @@ from .vk_messages import VkMessage
 from datetime import timedelta
 from vk_api_init import VK
 from credential import VK_GROUP_ID as GROUP_ID
+from jokes.Joker import Joker
+
 
 
 class VkCommands(Action):
@@ -14,7 +16,8 @@ class VkCommands(Action):
         self.context[vk_id] = [variants, {variants[0]: self.random_joke,
                                           variants[1]: self.joke_by_phrase_message,
                                           variants[2]: self.unsubscribe_first_message,
-                                          variants[3]: self.subscribe_first_message
+                                          variants[3]: self.subscribe_first_message,
+                                          variants[4]: self.start_message
                                           }, self.start_message]
         ans = keyboard.get(keyboard=keyboard_view)
         return ans
@@ -106,6 +109,10 @@ class VkCommands(Action):
         text = message['text'].lower()
         vk_id = message['peer_id']
         from_id = message['from_id']
+        try:
+            self.context[vk_id]
+        except Exception:
+            return self.ok_keyboard(vk_id=vk_id, keyboard_view=client_info['keyboard'])
         context = self.context.setdefault(vk_id, [None, {}, None, None, {}])
         action = self.message_without_context.get(text)
         if not action:
@@ -114,7 +121,7 @@ class VkCommands(Action):
             elif text.isdigit():
                 if int(text) >= len(context[0]):
                     return 'Нет такого варианта'
-                action = context[1].get(context[int(text)])
+                action = context[1][context[0][int(text)]]
             else:
                 action = context[1].get(text.lower())
             if not action:
@@ -215,6 +222,7 @@ class VkBot:
     def __init__(self):
         self.sender = VkSender()
         self.commands = VkCommands(self.sender)
+        self.joker = Joker()
 
     def new_message(self, req: dict):
         obj = req['object']
@@ -245,3 +253,11 @@ class VkBot:
 
     def del_user(self, vk_id):
         self.commands.del_user(vk_id=vk_id)
+
+    def distribution(self):
+        """
+        Отправляет анекдоты по запросам
+        """
+        for user_id, phrase in self.commands.get_distribution():
+            self.sender.send_message(message='Вот ваша посылка:\n' + self.joker.get_joke(phrase),
+                                     peer_id=user_id)

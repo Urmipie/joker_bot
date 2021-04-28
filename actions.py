@@ -4,8 +4,7 @@ from data.db_session import create_session
 from data.users import User
 from data.subscribes import Subscribe
 from data.likes import Like
-
-from datetime import timedelta
+from datetime import timedelta, datetime
 
 
 class Action:
@@ -91,6 +90,17 @@ class Action:
         sess.delete(sub)
         sess.commit()
         return 'Вы отписались'
+
+    def get_distribution(self):
+        sess = create_session()
+        sends = sess.query(Subscribe).filter(Subscribe.next_send <= datetime.now()).all()
+        dist_list = []
+        for send in sends:
+            dist_list.append((send.subscriber, send.phrase))
+            send.next_send = datetime.now() + send.frequency
+            sess.flush()
+            sess.commit()
+        return dist_list
 
     def do_command(self, *args, **kwargs):
         """

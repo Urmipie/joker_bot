@@ -5,7 +5,8 @@ from random import choice
 
 
 # Следующие 2 поля нужно заполнить перед запуском
-SERVER_URL = 'https://e8894f41416e.ngrok.io'.strip() + '/vk_api'
+SERVER_PORT = 5000
+SERVER_URL = 'https://3eb911631e9a.ngrok.io'.strip() + '/vk_api'
 VK_GROUP_ID = 191176862
 VK_TOKEN = keyring.get_password('system', 'vk_token')
 
