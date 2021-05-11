@@ -1,17 +1,21 @@
-import keyring
+from os import environ as env
 from vk_api import VkApi
 from string import ascii_letters, digits
 from random import choice
 
 
-# Следующие 2 поля нужно заполнить перед запуском
-SERVER_PORT = 5000
-SERVER_URL = 'https://3eb911631e9a.ngrok.io'.strip() + '/vk_api'
+# Вариант для Heroku
+SERVER_PORT = int(env.get("PORT", 5000))
+SERVER_URL = 'https://yandexvkproj.herokuapp.com' + '/vk_api'
 VK_GROUP_ID = 191176862
-VK_TOKEN = keyring.get_password('system', 'vk_token')
+
+# Пришлось чуть-чуть помудрить с передачей токена для Heroku. Нужно создать vk_token.txt с токеном
+
+with open('vk_token.txt') as file:
+    VK_TOKEN = file.read().strip()
 
 if not VK_TOKEN:
-    raise IndexError("keyring didn't find the token")
+    raise IndexError("Токена нема")
 
 vk_sess = VkApi(token=VK_TOKEN)
 vk = vk_sess.get_api()
